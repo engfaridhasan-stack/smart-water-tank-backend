@@ -1,0 +1,1 @@
+web: daphne -b 0.0.0.0 -p $PORT smart_water_tank.asgi:application
