@@ -123,3 +123,8 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_ALL_ORIGINS = True
 APPEND_SLASH = False
+
+# CSRF Trust for Render Domain
+CSRF_TRUSTED_ORIGINS = [
+    "https://smart-water-tank-backend.onrender.com",
+]
