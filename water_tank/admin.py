@@ -12,7 +12,6 @@ class DeviceAdmin(admin.ModelAdmin):
 # ২. রিয়েল-টাইম স্ট্যাটাস মনিটরিং (রঙিন লেভেলসহ)
 @admin.register(TankStatus)
 class TankStatusAdmin(admin.ModelAdmin):
-    # list_display-তে ফাংশনের নামগুলো ঠিকভাবে দেওয়া হয়েছে
     list_display = ('get_device_id', 'get_owner', 'display_level', 'display_pump', 'last_heartbeat')
     
     @admin.display(description='Device ID')
@@ -23,10 +22,8 @@ class TankStatusAdmin(admin.ModelAdmin):
     def get_owner(self, obj):
         return obj.device.owner.username if obj.device.owner else "No Owner"
 
-    # লেভেল অনুযায়ী কালার কোড
     @admin.display(description='Water Level')
     def display_level(self, obj):
-        # current_level যদি None হয় তার হ্যান্ডেলিং
         val = str(obj.current_level).upper() if obj.current_level else "UNKNOWN"
         color = "black"
         
@@ -35,18 +32,25 @@ class TankStatusAdmin(admin.ModelAdmin):
         elif "EMPTY" in val: color = "#dc3545" # Red
         elif "ERROR" in val: color = "#6610f2" # Purple
         
+        # এখানে color এবং val ভ্যারিয়েবল হিসেবে পাস করা হয়েছে, তাই এটি সেফ
         return format_html(
             '<span style="color: {}; font-weight: bold;">{}</span>',
             color,
             val
         )
 
-    # পাম্পের স্ট্যাটাস ইন্ডিকেটর
     @admin.display(description='Pump')
     def display_pump(self, obj):
+        # পরিবর্তন: {} এবং ভ্যারিয়েবল যোগ করা হয়েছে যাতে Django 6 এ এরর না আসে
         if obj.pump_running:
-            return format_html('<b style="color: white; background: #28a745; padding: 2px 8px; border-radius: 4px;">ON</b>')
-        return format_html('<b style="color: white; background: #6c757d; padding: 2px 8px; border-radius: 4px;">OFF</b>')
+            return format_html(
+                '<b style="color: white; background: #28a745; padding: 2px 8px; border-radius: 4px;">{}</b>', 
+                "ON"
+            )
+        return format_html(
+            '<b style="color: white; background: #6c757d; padding: 2px 8px; border-radius: 4px;">{}</b>', 
+            "OFF"
+        )
 
 # ৩. শিডিউল ম্যানেজমেন্ট
 @admin.register(PumpSchedule)
